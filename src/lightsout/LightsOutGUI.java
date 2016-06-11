@@ -11,18 +11,34 @@ public class LightsOutGUI extends JFrame implements ActionListener
     JPanel pnlInfo = new JPanel(null); //Uses a null layout
     JToggleButton buttons[][] = new JToggleButton[gridSize][gridSize];
     JButton resetButton = new JButton("Reset");
+    JButton solveButton = new JButton("Solve");
     
     int moveCounter = 0;
     boolean firstPress = true;
     long startTimer = 0;
     long endTimer = 0;
     
+    LightsOutSolver ls = new LightsOutSolver();
+    
+    
+    WindowListener exitListener = new WindowAdapter()
+    {
+      @Override
+      public void windowClosing(WindowEvent e)
+      {
+          ls.myThread.interrupt();
+          System.exit(0);
+      }
+    };
+    
+    
     public void runGUI()
-	{
+    {
                 this.setTitle("Lights Out!");
                 this.setSize(800, 800);
                 this.setLocation(10, 10);
-                this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                this.addWindowListener(exitListener);
 		
 		createInfoPanel();
 		
@@ -30,46 +46,56 @@ public class LightsOutGUI extends JFrame implements ActionListener
 		
 		this.add(tp);
 		this.setVisible(true);
-	}
-	
-	public void createInfoPanel()
-	{
-            int r = 100;
-            int c = 0;
-            for(int i=0;i<gridSize;i++)
+    }
+    
+    public void createInfoPanel()
+    {
+        int r = 100;
+        int c = 0;
+        for(int i=0;i<gridSize;i++)
+        {
+            c=100;
+            for(int j=0;j<gridSize;j++)
             {
-                c=100;
-                for(int j=0;j<gridSize;j++)
-                {
-                    String buttonLabel = String.valueOf(j)+"¬"+String.valueOf(i);
-                    buttons[j][i] = new JToggleButton();
-                    buttons[j][i].setActionCommand(buttonLabel);
-                    buttons[j][i].setSize(50, 50);
-                    buttons[j][i].setLocation(c, r);
-                    buttons[j][i].setEnabled(true);
-                    buttons[j][i].addActionListener(this);
-                    pnlInfo.add(buttons[j][i]);
-                    
-                    c=c+51;
-                }
-                r=r+51;
+                String buttonLabel = String.valueOf(j)+"¬"+String.valueOf(i);
+                buttons[j][i] = new JToggleButton();
+                buttons[j][i].setActionCommand(buttonLabel);
+                buttons[j][i].setSize(50, 50);
+                buttons[j][i].setLocation(c, r);
+                buttons[j][i].setEnabled(true);
+                buttons[j][i].addActionListener(this);
+                pnlInfo.add(buttons[j][i]);
+
+                c=c+51;
             }
-            resetButton.setSize(100, 20);
-            resetButton.setLocation(600, 150);
-            resetButton.addActionListener(this);
-            pnlInfo.add(resetButton);
+            r=r+51;
         }
+        resetButton.setSize(100, 20);
+        resetButton.setLocation(600, 150);
+        resetButton.addActionListener(this);
+        pnlInfo.add(resetButton);
+        solveButton.setSize(100, 20);
+        solveButton.setLocation(600, 180);
+        solveButton.addActionListener(this);
+        pnlInfo.add(solveButton);
+    }
     
     public void actionPerformed(ActionEvent e)
     {
         if(e.getSource() == resetButton)
         {
+            ls.myThread.interrupt();
             LightsOutLogic ll = new LightsOutLogic();
             ll.resetButtons(buttons);
             moveCounter = 0;
             firstPress = true;
             startTimer = 0;
             endTimer = 0;
+        }
+        else if(e.getSource() == solveButton)
+        {
+            ls.setArray(buttons);
+            ls.myThread.start();
         }
         else
         {
@@ -85,13 +111,13 @@ public class LightsOutGUI extends JFrame implements ActionListener
             ll.changeLights(e, buttons);
             if(ll.checkWin() == true)
             {
-                endGame();
+                endGame(moveCounter, startTimer, endTimer);
             }
         }
         
     }
     
-    public void endGame()
+    public void endGame(int moveCounter, long startTimer, long endTimer)
     {
         endTimer = System.currentTimeMillis();
         long timeTaken = (endTimer - startTimer)/1000;
@@ -101,12 +127,19 @@ public class LightsOutGUI extends JFrame implements ActionListener
         if(choice == 0)
         {
             LightsOutLogic ll = new LightsOutLogic();
-            ll.resetButtons(buttons);
+            try
+            {
+                ls.myThread.interrupt();
+                ll.resetButtons(buttons);
+            }
+            catch(Exception exc)
+            {
+                
+            }
             moveCounter = 0;
             firstPress = true;
             startTimer = 0;
             endTimer = 0;
         }
     }
-    
 }

@@ -1,8 +1,9 @@
 package lightsout;
 
+import java.util.concurrent.TimeUnit;
 import javax.swing.JToggleButton;
 
-public class LightsOutSolver
+public class LightsOutSolver extends Thread
 {
     int[][] solutionArray = new int[][]{{0, 1}, {1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}, {6, 1}, {7, 1}, {8, 1},
                                         {0, 2}, {999}, {999}, {999}, {999}, {999}, {999}, {999}, {8, 2},
@@ -13,10 +14,87 @@ public class LightsOutSolver
                                         {999}, {999}, {2, 7}, {999}, {4, 7}, {999}, {6, 7}, {999}, {999},
                                         {999}, {1, 8}, {999}, {3, 8}, {999}, {5, 8}, {999}, {7, 8}, {999}}; //999 represents a blank space
     
-    public void solvePuzzle(JToggleButton[][] buttonsArray)
+    long solveStart = 0;
+    long solveEnd = 0;
+    
+    JToggleButton[][] buttonsArray;
+ 
+     public void setArray(JToggleButton[][] buttons)
+     {
+         buttonsArray = buttons;
+     }
+     
+      Thread myThread = new Thread()
+        {
+            public void run()
+            {
+                while(!Thread.currentThread().isInterrupted())
+                { 
+                    solvePuzzle();
+                }
+            }
+        };
+     
+    public void solvePuzzle()
     {
-        
+        solveStart = System.currentTimeMillis();
         for(int i=0;i<solutionArray.length;i++)
+        {
+            if(solutionArray[i][0] != 999)
+            {
+                changeLightSolver(buttonsArray[solutionArray[i][0]][solutionArray[i][1]]);
+                try
+                {
+                    Thread.sleep(500);
+                }
+                catch(Exception exc)
+                {
+
+                }
+            }
+            
+        }
+        solveEnd = System.currentTimeMillis();
+        LightsOutGUI lg = new LightsOutGUI();
+        lg.endGame(39, solveStart, solveEnd);
+    }
+    
+    public void changeLightSolver(JToggleButton currentButton)
+    {
+        LightsOutLogic ll = new LightsOutLogic();
+        int xPos = ll.findButtonPos(currentButton)[0];
+        int yPos = ll.findButtonPos(currentButton)[1];
+        
+        buttonsArray[xPos][yPos].setSelected(!buttonsArray[xPos][yPos].isSelected());
+        try
+        {
+            buttonsArray[xPos-1][yPos].setSelected(!buttonsArray[xPos-1][yPos].isSelected());
+        }
+        catch(Exception ex)
+        {
+            
+        }
+        try
+        {
+            buttonsArray[xPos+1][yPos].setSelected(!buttonsArray[xPos+1][yPos].isSelected());
+        }
+        catch(Exception ex)
+        {
+            
+        }
+        try
+        {
+            buttonsArray[xPos][yPos-1].setSelected(!buttonsArray[xPos][yPos-1].isSelected());
+        }
+        catch(Exception ex)
+        {
+            
+        }
+        try
+        {
+            buttonsArray[xPos][yPos+1].setSelected(!buttonsArray[xPos][yPos+1].isSelected());
+        }
+        catch(Exception ex)
         {
             
         }

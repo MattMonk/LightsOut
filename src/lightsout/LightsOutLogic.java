@@ -14,10 +14,10 @@ public class LightsOutLogic
     JToggleButton[][] buttonArray;
     JButton resetButton;
       
-    public int[] findButtonPos()
+    public int[] findButtonPos(JToggleButton currentButton)
     {
         int[] buttonPos = new int[2];
-        String[] stringPos = (toggleButton.getActionCommand()).split("¬");
+        String[] stringPos = (currentButton.getActionCommand()).split("¬");
         
         buttonPos[0] = Integer.parseInt(stringPos[0]);
         buttonPos[1] = Integer.parseInt(stringPos[1]);
@@ -31,8 +31,8 @@ public class LightsOutLogic
         toggleButton = (JToggleButton)source;
         buttonArray = buttons;
         
-        int xPos = findButtonPos()[0];
-        int yPos = findButtonPos()[1];
+        int xPos = findButtonPos(toggleButton)[0];
+        int yPos = findButtonPos(toggleButton)[1];
         
         try
         {
