@@ -3,10 +3,12 @@ package lightsout;
 
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 
 public class LightsOutLogic
 {
+    int gridSize = 9;
     
     JToggleButton toggleButton;
     JToggleButton[][] buttonArray;
@@ -15,8 +17,15 @@ public class LightsOutLogic
     public LightsOutLogic(ActionEvent e, JToggleButton[][] buttons)
     {
         Object source = e.getSource();
-        toggleButton = (JToggleButton)source;
-        buttonArray = buttons;
+        try
+        {
+            toggleButton = (JToggleButton)source;
+        }
+        catch(Exception exc)
+        {
+        
+        }
+            buttonArray = buttons;
     }
     
     public int[] findButtonPos()
@@ -31,9 +40,7 @@ public class LightsOutLogic
     }
     
     public void changeLights()
-    {
-        /*String test = toggleButton.getText();
-        System.out.println(test);*/
+    {    
         int xPos = findButtonPos()[0];
         int yPos = findButtonPos()[1];
         
@@ -71,4 +78,31 @@ public class LightsOutLogic
         }
     }
     
+    public boolean checkWin()
+    {
+        boolean allSelected = true;
+        for(int i=0;i<gridSize;i++)
+        {
+            for(int j=0;j<gridSize;j++)
+            {
+                if(buttonArray[i][j].isSelected() == false)
+                {
+                    allSelected = false;
+                }
+            }
+        }
+        return allSelected;
+    }
+    
+    public void resetButtons()
+    {
+        for(int i=0;i<gridSize;i++)
+            {
+                for(int j=0;j<gridSize;j++)
+                {
+                    buttonArray[i][j].setSelected(false);
+                }
+            }
+    }
+   
 }

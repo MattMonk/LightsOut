@@ -5,11 +5,17 @@ import java.awt.event.*;
 
 public class LightsOutGUI extends JFrame implements ActionListener
 {
+    int gridSize = 9;
     
     JTabbedPane tp = new JTabbedPane();
     JPanel pnlInfo = new JPanel(null); //Uses a null layout
-    JToggleButton buttons[][] = new JToggleButton[7][7];
+    JToggleButton buttons[][] = new JToggleButton[gridSize][gridSize];
     JButton resetButton = new JButton("Reset");
+    
+    int moveCounter = 0;
+    boolean firstPress = true;
+    long startTimer = 0;
+    long endTimer = 0;
     
     public void runGUI()
 	{
@@ -30,10 +36,10 @@ public class LightsOutGUI extends JFrame implements ActionListener
 	{
             int r = 100;
             int c = 0;
-            for(int i=0;i<7;i++)
+            for(int i=0;i<gridSize;i++)
             {
                 c=100;
-                for(int j=0;j<7;j++)
+                for(int j=0;j<gridSize;j++)
                 {
                     String buttonLabel = String.valueOf(j)+"¬"+String.valueOf(i);
                     buttons[j][i] = new JToggleButton();
@@ -49,7 +55,7 @@ public class LightsOutGUI extends JFrame implements ActionListener
                 r=r+51;
             }
             resetButton.setSize(100, 20);
-            resetButton.setLocation(500, 150);
+            resetButton.setLocation(600, 150);
             resetButton.addActionListener(this);
             pnlInfo.add(resetButton);
         }
@@ -58,20 +64,49 @@ public class LightsOutGUI extends JFrame implements ActionListener
     {
         if(e.getSource() == resetButton)
         {
-            for(int i=0;i<7;i++)
-            {
-                for(int j=0;j<7;j++)
-                {
-                    buttons[i][j].setSelected(false);
-                }
-            }
+            LightsOutLogic ll = new LightsOutLogic(e, buttons);
+            ll.resetButtons();
+            moveCounter = 0;
+            firstPress = true;
+            startTimer = 0;
+            endTimer = 0;
         }
         else
         {
-            LightsOutLogic ll = new LightsOutLogic(e, buttons);
-            ll.changeLights();
+        if(firstPress == true)
+        {
+            startTimer = System.currentTimeMillis();
+            firstPress = false;
         }
         
+        moveCounter++;
+            
+            LightsOutLogic ll = new LightsOutLogic(e, buttons);
+            ll.changeLights();
+            if(ll.checkWin() == true)
+            {
+                endGame(e);
+            }
+        }
+        
+    }
+    
+    public void endGame(ActionEvent e)
+    {
+        endTimer = System.currentTimeMillis();
+        long timeTaken = (endTimer - startTimer)/1000;
+        String winMessage = "Congratulations! You have won the game! It took you "+(String.valueOf(timeTaken))+" seconds and "+(String.valueOf(moveCounter))+" moves";
+        Object[] options = {"Reset", "Close message"};
+        int choice = JOptionPane.showOptionDialog(null, winMessage, "Congratulations!", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if(choice == 0)
+        {
+            LightsOutLogic ll = new LightsOutLogic(e, buttons);
+            ll.resetButtons();
+            moveCounter = 0;
+            firstPress = true;
+            startTimer = 0;
+            endTimer = 0;
+        }
     }
     
 }
