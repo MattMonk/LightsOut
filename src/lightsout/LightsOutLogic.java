@@ -13,21 +13,7 @@ public class LightsOutLogic
     JToggleButton toggleButton;
     JToggleButton[][] buttonArray;
     JButton resetButton;
-    
-    public LightsOutLogic(ActionEvent e, JToggleButton[][] buttons)
-    {
-        Object source = e.getSource();
-        try
-        {
-            toggleButton = (JToggleButton)source;
-        }
-        catch(Exception exc)
-        {
-        
-        }
-            buttonArray = buttons;
-    }
-    
+      
     public int[] findButtonPos()
     {
         int[] buttonPos = new int[2];
@@ -39,8 +25,12 @@ public class LightsOutLogic
         return buttonPos;
     }
     
-    public void changeLights()
+    public void changeLights(ActionEvent e, JToggleButton[][] buttons)
     {    
+        Object source = e.getSource();
+        toggleButton = (JToggleButton)source;
+        buttonArray = buttons;
+        
         int xPos = findButtonPos()[0];
         int yPos = findButtonPos()[1];
         
@@ -94,8 +84,9 @@ public class LightsOutLogic
         return allSelected;
     }
     
-    public void resetButtons()
+    public void resetButtons(JToggleButton[][] buttons)
     {
+        buttonArray = buttons;
         for(int i=0;i<gridSize;i++)
             {
                 for(int j=0;j<gridSize;j++)

@@ -64,8 +64,8 @@ public class LightsOutGUI extends JFrame implements ActionListener
     {
         if(e.getSource() == resetButton)
         {
-            LightsOutLogic ll = new LightsOutLogic(e, buttons);
-            ll.resetButtons();
+            LightsOutLogic ll = new LightsOutLogic();
+            ll.resetButtons(buttons);
             moveCounter = 0;
             firstPress = true;
             startTimer = 0;
@@ -81,17 +81,17 @@ public class LightsOutGUI extends JFrame implements ActionListener
         
         moveCounter++;
             
-            LightsOutLogic ll = new LightsOutLogic(e, buttons);
-            ll.changeLights();
+            LightsOutLogic ll = new LightsOutLogic();
+            ll.changeLights(e, buttons);
             if(ll.checkWin() == true)
             {
-                endGame(e);
+                endGame();
             }
         }
         
     }
     
-    public void endGame(ActionEvent e)
+    public void endGame()
     {
         endTimer = System.currentTimeMillis();
         long timeTaken = (endTimer - startTimer)/1000;
@@ -100,8 +100,8 @@ public class LightsOutGUI extends JFrame implements ActionListener
         int choice = JOptionPane.showOptionDialog(null, winMessage, "Congratulations!", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         if(choice == 0)
         {
-            LightsOutLogic ll = new LightsOutLogic(e, buttons);
-            ll.resetButtons();
+            LightsOutLogic ll = new LightsOutLogic();
+            ll.resetButtons(buttons);
             moveCounter = 0;
             firstPress = true;
             startTimer = 0;
