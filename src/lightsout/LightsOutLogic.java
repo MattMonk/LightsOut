@@ -8,7 +8,7 @@ import javax.swing.JToggleButton;
 
 public class LightsOutLogic
 {
-    int gridSize = 9;
+    int gridSize = 5;
     
     JToggleButton toggleButton;
     JToggleButton[][] buttonArray;

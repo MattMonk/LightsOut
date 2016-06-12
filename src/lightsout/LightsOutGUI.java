@@ -5,13 +5,14 @@ import java.awt.event.*;
 
 public class LightsOutGUI extends JFrame implements ActionListener
 {
-    int gridSize = 9;
+    int gridSize = 5;
     
     JTabbedPane tp = new JTabbedPane();
     JPanel pnlInfo = new JPanel(null); //Uses a null layout
     JToggleButton buttons[][] = new JToggleButton[gridSize][gridSize];
     JButton resetButton = new JButton("Reset");
     JButton solveButton = new JButton("Solve");
+    JButton bfsButton = new JButton("<html>Solve with <br>brute force</html>");
     
     int moveCounter = 0;
     boolean firstPress = true;
@@ -26,7 +27,8 @@ public class LightsOutGUI extends JFrame implements ActionListener
       @Override
       public void windowClosing(WindowEvent e)
       {
-          ls.myThread.interrupt();
+          Runnable r = new ThreadSolver(ls.hardAnswerArray, buttons);
+          new Thread(r).interrupt();
           System.exit(0);
       }
     };
@@ -74,17 +76,24 @@ public class LightsOutGUI extends JFrame implements ActionListener
         resetButton.setLocation(600, 150);
         resetButton.addActionListener(this);
         pnlInfo.add(resetButton);
+        
         solveButton.setSize(100, 20);
         solveButton.setLocation(600, 180);
         solveButton.addActionListener(this);
         pnlInfo.add(solveButton);
+        
+        bfsButton.setSize(100, 50);
+        bfsButton.setLocation(600, 210);
+        bfsButton.addActionListener(this);
+        pnlInfo.add(bfsButton);
     }
     
     public void actionPerformed(ActionEvent e)
     {
         if(e.getSource() == resetButton)
         {
-            ls.myThread.interrupt();
+            Runnable r = new ThreadSolver(ls.hardAnswerArray, buttons);
+            new Thread(r).interrupt();
             LightsOutLogic ll = new LightsOutLogic();
             ll.resetButtons(buttons);
             moveCounter = 0;
@@ -94,8 +103,15 @@ public class LightsOutGUI extends JFrame implements ActionListener
         }
         else if(e.getSource() == solveButton)
         {
-            ls.setArray(buttons);
-            ls.myThread.start();
+            Runnable r = new ThreadSolver(ls.hardAnswerArray, buttons);
+            new Thread(r).start();
+        }
+        else if(e.getSource() == bfsButton)
+        {
+            BruteForceSimulator bfs = new BruteForceSimulator();
+            bfs.runAll();
+            Runnable r = new ThreadSolver(bfs.solutionArray, buttons);
+            new Thread(r).start();
         }
         else
         {
@@ -129,7 +145,8 @@ public class LightsOutGUI extends JFrame implements ActionListener
             LightsOutLogic ll = new LightsOutLogic();
             try
             {
-                ls.myThread.interrupt();
+                Runnable r = new ThreadSolver(ls.hardAnswerArray, buttons);
+                new Thread(r).interrupt();
                 ll.resetButtons(buttons);
             }
             catch(Exception exc)

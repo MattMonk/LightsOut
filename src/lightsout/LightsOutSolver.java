@@ -1,11 +1,10 @@
 package lightsout;
 
-import java.util.concurrent.TimeUnit;
 import javax.swing.JToggleButton;
 
 public class LightsOutSolver extends Thread
 {
-    int[][] solutionArray = new int[][]{{0, 1}, {1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}, {6, 1}, {7, 1}, {8, 1},
+    int[][] hardAnswerArray = new int[][]{{0, 1}, {1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}, {6, 1}, {7, 1}, {8, 1},
                                         {0, 2}, {999}, {999}, {999}, {999}, {999}, {999}, {999}, {8, 2},
                                         {0, 3}, {1, 3}, {999}, {999}, {999}, {999}, {999}, {7, 3}, {8, 3},
                                         {999}, {1, 4}, {999}, {3, 4}, {4, 4}, {5, 4}, {999}, {7, 4}, {999},
@@ -16,33 +15,16 @@ public class LightsOutSolver extends Thread
     
     long solveStart = 0;
     long solveEnd = 0;
-    
-    JToggleButton[][] buttonsArray;
- 
-     public void setArray(JToggleButton[][] buttons)
-     {
-         buttonsArray = buttons;
-     }
-     
-      Thread myThread = new Thread()
-        {
-            public void run()
-            {
-                while(!Thread.currentThread().isInterrupted())
-                { 
-                    solvePuzzle();
-                }
-            }
-        };
-     
-    public void solvePuzzle()
+   
+    public void solvePuzzle(int[][] solutionArray, JToggleButton[][] buttonsArray)
     {
+        
         solveStart = System.currentTimeMillis();
         for(int i=0;i<solutionArray.length;i++)
         {
             if(solutionArray[i][0] != 999)
-            {
-                changeLightSolver(buttonsArray[solutionArray[i][0]][solutionArray[i][1]]);
+            {  
+                changeLightSolver(buttonsArray[solutionArray[i][0]][solutionArray[i][1]], buttonsArray);
                 try
                 {
                     Thread.sleep(500);
@@ -59,7 +41,7 @@ public class LightsOutSolver extends Thread
         lg.endGame(39, solveStart, solveEnd);
     }
     
-    public void changeLightSolver(JToggleButton currentButton)
+    public void changeLightSolver(JToggleButton currentButton, JToggleButton[][] buttonsArray)
     {
         LightsOutLogic ll = new LightsOutLogic();
         int xPos = ll.findButtonPos(currentButton)[0];
