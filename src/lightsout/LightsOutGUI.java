@@ -5,7 +5,7 @@ import java.awt.event.*;
 
 public class LightsOutGUI extends JFrame implements ActionListener
 {
-    int gridSize = 5;
+    int gridSize = 7;
     
     JTabbedPane tp = new JTabbedPane();
     JPanel pnlInfo = new JPanel(null); //Uses a null layout

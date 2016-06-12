@@ -5,8 +5,8 @@ import java.util.stream.IntStream;
 
 public class BruteForceSimulator
 {   
-    int maxMoves = 30;
-    int gridSize = 5;
+    int maxMoves = 40;
+    int gridSize = 7;
     
     boolean[][] actualGrid = new boolean[gridSize][gridSize];
     int[][] solutionArray = new int[maxMoves][2];
@@ -149,8 +149,8 @@ public class BruteForceSimulator
         if(isOver == true)
         {
             /*System.out.println("Solution found after "+ String.valueOf(i)+" moves");
-            printActualGrid();
-            printSolution(solutionArray);*/
+            printActualGrid();*/
+            printSolution(solutionArray);
         }
     }
 }
