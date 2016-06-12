@@ -1,6 +1,7 @@
 package lightsout;
 
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class BruteForceSimulator
 {   
@@ -125,11 +126,22 @@ public class BruteForceSimulator
             i = 0;
             while(isOver == false && i < maxMoves)
             {
+                boolean alreadyPressed = false;
                 int xPos = random.nextInt(gridSize);
                 int yPos = random.nextInt(gridSize);
-                changeArea(xPos, yPos);
-                solutionArray[i][0] = xPos;
-                solutionArray[i][1] = yPos;      
+                for(int j=0;j<maxMoves;j++)
+                {
+                    if((solutionArray[j][0] == xPos) && (solutionArray[j][1] == yPos))
+                    {
+                        alreadyPressed = true;
+                    }
+                }
+                if(alreadyPressed == false)
+                {
+                    changeArea(xPos, yPos);
+                    solutionArray[i][0] = xPos;
+                    solutionArray[i][1] = yPos;
+                }
                 i++;
                 isOver = checkWin();
             }
