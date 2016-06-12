@@ -17,8 +17,11 @@ public class ThreadSolver implements Runnable
     
     public void run()
     {
+        Thread tempThread = Thread.currentThread();
+        tempThread.setName("Solver Thread");
+        
         while(!Thread.currentThread().isInterrupted())
-        { 
+        {  
             ls.solvePuzzle(solutionArray, buttonsArray);
         }
     }

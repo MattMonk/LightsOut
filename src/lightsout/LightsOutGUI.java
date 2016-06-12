@@ -2,14 +2,15 @@ package lightsout;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.Set;
 
 public class LightsOutGUI extends JFrame implements ActionListener
 {
-    int gridSize = 7;
+    int gridSize = 5;
     
     JTabbedPane tp = new JTabbedPane();
     JPanel pnlInfo = new JPanel(null); //Uses a null layout
-    JToggleButton buttons[][] = new JToggleButton[gridSize][gridSize];
+    JToggleButton buttons[][];
     JButton resetButton = new JButton("Reset");
     JButton solveButton = new JButton("Solve");
     JButton bfsButton = new JButton("<html>Solve with <br>brute force</html>");
@@ -20,6 +21,7 @@ public class LightsOutGUI extends JFrame implements ActionListener
     long endTimer = 0;
     
     LightsOutSolver ls = new LightsOutSolver();
+    int[][] hardAnswerArray;
     
     
     WindowListener exitListener = new WindowAdapter()
@@ -27,8 +29,9 @@ public class LightsOutGUI extends JFrame implements ActionListener
       @Override
       public void windowClosing(WindowEvent e)
       {
-          Runnable r = new ThreadSolver(ls.hardAnswerArray, buttons);
-          new Thread(r).interrupt();
+          Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+          Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+          threadArray[threadArray.length-1].interrupt();
           System.exit(0);
       }
     };
@@ -41,7 +44,22 @@ public class LightsOutGUI extends JFrame implements ActionListener
                 this.setLocation(10, 10);
                 this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 this.addWindowListener(exitListener);
-		
+                
+                gridSize = gridInput();
+                buttons = new JToggleButton[gridSize][gridSize];
+                if(gridSize == 5)
+                {
+                    hardAnswerArray = ls.hardAnswer5;
+                }
+                else if(gridSize == 7)
+                {
+                    hardAnswerArray = ls.hardAnswer7;
+                }
+                if(gridSize == 9)
+                {
+                    hardAnswerArray = ls.hardAnswer9;
+                }
+                
 		createInfoPanel();
 		
 		tp.addTab("Lights Out!", pnlInfo);
@@ -82,18 +100,21 @@ public class LightsOutGUI extends JFrame implements ActionListener
         solveButton.addActionListener(this);
         pnlInfo.add(solveButton);
         
-        bfsButton.setSize(100, 50);
-        bfsButton.setLocation(600, 210);
-        bfsButton.addActionListener(this);
-        pnlInfo.add(bfsButton);
+        if(gridSize == 5)
+        {
+            bfsButton.setSize(100, 50);
+            bfsButton.setLocation(600, 210);
+            bfsButton.addActionListener(this);
+            pnlInfo.add(bfsButton);
+        }
     }
     
     public void actionPerformed(ActionEvent e)
     {
+        int[][] arrayToThread = new int[][]{};
+        
         if(e.getSource() == resetButton)
         {
-            Runnable r = new ThreadSolver(ls.hardAnswerArray, buttons);
-            new Thread(r).interrupt();
             LightsOutLogic ll = new LightsOutLogic();
             ll.resetButtons(buttons);
             moveCounter = 0;
@@ -103,25 +124,29 @@ public class LightsOutGUI extends JFrame implements ActionListener
         }
         else if(e.getSource() == solveButton)
         {
-            Runnable r = new ThreadSolver(ls.hardAnswerArray, buttons);
-            new Thread(r).start();
+            arrayToThread = hardAnswerArray;   
+            ThreadSolver obj = new ThreadSolver(arrayToThread, buttons);
+            Thread tobj = new Thread(obj);
+            tobj.start();
         }
         else if(e.getSource() == bfsButton)
         {
             BruteForceSimulator bfs = new BruteForceSimulator();
             bfs.runAll();
-            Runnable r = new ThreadSolver(bfs.solutionArray, buttons);
-            new Thread(r).start();
+            arrayToThread = bfs.solutionArray;
+            ThreadSolver obj = new ThreadSolver(arrayToThread, buttons);
+            Thread tobj = new Thread(obj);
+            tobj.start();
         }
         else
         {
-        if(firstPress == true)
-        {
-            startTimer = System.currentTimeMillis();
-            firstPress = false;
-        }
+            if(firstPress == true)
+            {
+                startTimer = System.currentTimeMillis();
+                firstPress = false;
+            }
         
-        moveCounter++;
+            moveCounter++;
             
             LightsOutLogic ll = new LightsOutLogic();
             ll.changeLights(e, buttons);
@@ -129,8 +154,7 @@ public class LightsOutGUI extends JFrame implements ActionListener
             {
                 endGame(moveCounter, startTimer, endTimer);
             }
-        }
-        
+        }     
     }
     
     public void endGame(int moveCounter, long startTimer, long endTimer)
@@ -139,14 +163,12 @@ public class LightsOutGUI extends JFrame implements ActionListener
         long timeTaken = (endTimer - startTimer)/1000;
         String winMessage = "Congratulations! You have won the game! It took you "+(String.valueOf(timeTaken))+" seconds and "+(String.valueOf(moveCounter))+" moves";
         Object[] options = {"Reset", "Close message"};
-        int choice = JOptionPane.showOptionDialog(null, winMessage, "Congratulations!", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        int choice = JOptionPane.showOptionDialog(null, winMessage, "Congratulations!", 0, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
         if(choice == 0)
         {
             LightsOutLogic ll = new LightsOutLogic();
             try
             {
-                Runnable r = new ThreadSolver(ls.hardAnswerArray, buttons);
-                new Thread(r).interrupt();
                 ll.resetButtons(buttons);
             }
             catch(Exception exc)
@@ -158,5 +180,17 @@ public class LightsOutGUI extends JFrame implements ActionListener
             startTimer = 0;
             endTimer = 0;
         }
+    }
+    
+    public int gridInput()
+    {
+        int gridArea = 5;
+        int[] choiceToArea = {5, 7, 9};
+        String mainText = "<html>Please select the grid area.<br>Note that the brute force solve<br>option is only available in 5x5<br>mode as it would took to long<br>for bigger grids.</html>";
+        
+        Object[] options = {"5x5", "7x7", "9x9"};
+        int choice = JOptionPane.showOptionDialog(null, mainText, "Grid Size", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        gridArea = choiceToArea[choice];
+        return gridArea;
     }
 }
