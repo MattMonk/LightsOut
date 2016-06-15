@@ -70,7 +70,7 @@ public class LightsOutLogic
     public boolean checkWin()
     {
         LightsOutGUI lgrid = new LightsOutGUI();
-        int gridSize = lgrid.buttons.length;
+        int gridSize = buttonArray.length;
         boolean allSelected = true;
         for(int i=0;i<gridSize;i++)
         {
@@ -87,7 +87,7 @@ public class LightsOutLogic
     
     public void resetButtons(JToggleButton[][] buttons)
     {
-        Thread[] a = new Thread[1000];
+        /*Thread[] a = new Thread[1000];
         int n = Thread.enumerate(a);
         for(int i=0; i<n;i++)
         {
@@ -96,16 +96,16 @@ public class LightsOutLogic
                 a[i].interrupt();
                 break;
             }
-        }
+        }*/
         
         buttonArray = buttons;
         for(int i=0;i<buttons.length;i++)
+        {
+            for(int j=0;j<buttons.length;j++)
             {
-                for(int j=0;j<buttons.length;j++)
-                {
-                    buttonArray[i][j].setSelected(false);
-                }
+                buttonArray[i][j].setSelected(false);
             }
+        }
     }
    
 }

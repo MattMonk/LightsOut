@@ -111,6 +111,15 @@ public class BruteForceSimulator
         }
     }
     
+    public int[][] fixArray(int count, int[][] solutionArray)
+    {
+        for(int i=count;i<solutionArray.length;i++)
+        {
+            solutionArray[i][0] = 999;
+        }
+        return solutionArray;
+    }
+    
     public void runAll()
     {
         Random random = new Random();
@@ -151,6 +160,7 @@ public class BruteForceSimulator
         {
             /*System.out.println("Solution found after "+ String.valueOf(i)+" moves");
             printActualGrid();*/
+            solutionArray = fixArray(count, solutionArray);
             printSolution(solutionArray);
         }
     }

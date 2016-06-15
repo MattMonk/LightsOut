@@ -8,6 +8,7 @@ public class ThreadSolver implements Runnable
     LightsOutGUI lg = new LightsOutGUI();
     int[][] solutionArray;
     JToggleButton[][] buttonsArray;
+    private volatile boolean running = true;
     
     public ThreadSolver(int[][] inputArray, JToggleButton[][] inputButtonsArray)
     {
@@ -15,14 +16,32 @@ public class ThreadSolver implements Runnable
         buttonsArray = inputButtonsArray;
     }
     
+    public void terminate()
+    {
+        running = false;
+    }
+    
+    @Override
     public void run()
     {
-        Thread tempThread = Thread.currentThread();
-        tempThread.setName("Solver Thread");
+        while(running)
+        {
+            try
+            {
+                Thread tempThread = Thread.currentThread();
+                tempThread.setName("Solver Thread");
+
+                ls.solvePuzzle(solutionArray, buttonsArray);
+            }
+            catch(Exception exc)
+            {
+                running = false;
+            }
+        }
         
-        while(!Thread.currentThread().isInterrupted())
+        /*while(!Thread.currentThread().isInterrupted())
         {  
             ls.solvePuzzle(solutionArray, buttonsArray);
-        }
+        }*/
     }
 }

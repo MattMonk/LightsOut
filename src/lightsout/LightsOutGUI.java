@@ -7,6 +7,9 @@ import java.util.Set;
 public class LightsOutGUI extends JFrame implements ActionListener
 {
     int gridSize = 5;
+    //Thread solverThread;
+    //ThreadSolver runnable;
+    SolverWorker sw;
     
     JTabbedPane tp = new JTabbedPane();
     JPanel pnlInfo = new JPanel(null); //Uses a null layout
@@ -19,6 +22,7 @@ public class LightsOutGUI extends JFrame implements ActionListener
     boolean firstPress = true;
     long startTimer = 0;
     long endTimer = 0;
+    public static boolean isSwinging = true;
     
     LightsOutSolver ls = new LightsOutSolver();
     int[][] hardAnswerArray;
@@ -115,6 +119,27 @@ public class LightsOutGUI extends JFrame implements ActionListener
         
         if(e.getSource() == resetButton)
         {
+            /*if(solverThread != null)
+            {
+                runnable.terminate();
+                try
+                {
+                    solverThread.join();
+                }
+                catch(Exception exc)
+                {
+                    
+                }
+            }*/
+            isSwinging = false;
+            try
+            {
+                sw.cancel(true);
+            }
+            catch(Exception exc)
+            {
+                
+            }
             LightsOutLogic ll = new LightsOutLogic();
             ll.resetButtons(buttons);
             moveCounter = 0;
@@ -125,18 +150,24 @@ public class LightsOutGUI extends JFrame implements ActionListener
         else if(e.getSource() == solveButton)
         {
             arrayToThread = hardAnswerArray;   
-            ThreadSolver obj = new ThreadSolver(arrayToThread, buttons);
-            Thread tobj = new Thread(obj);
-            tobj.start();
+            /*runnable = new ThreadSolver(arrayToThread, buttons);
+            solverThread = new Thread(runnable);
+            solverThread.start();*/
+            isSwinging = true;
+            sw = new SolverWorker(arrayToThread, buttons);
+            sw.execute();
         }
         else if(e.getSource() == bfsButton)
         {
             BruteForceSimulator bfs = new BruteForceSimulator();
             bfs.runAll();
             arrayToThread = bfs.solutionArray;
-            ThreadSolver obj = new ThreadSolver(arrayToThread, buttons);
-            Thread tobj = new Thread(obj);
-            tobj.start();
+            /*runnable = new ThreadSolver(arrayToThread, buttons);
+            solverThread = new Thread(runnable);
+            solverThread.start();*/
+            isSwinging = true;
+            sw = new SolverWorker(arrayToThread, buttons);
+            sw.execute();
         }
         else
         {
@@ -166,15 +197,23 @@ public class LightsOutGUI extends JFrame implements ActionListener
         int choice = JOptionPane.showOptionDialog(null, winMessage, "Congratulations!", 0, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
         if(choice == 0)
         {
+            System.out.println("Got here first");
             LightsOutLogic ll = new LightsOutLogic();
-            try
-            {
-                ll.resetButtons(buttons);
-            }
-            catch(Exception exc)
-            {
-                
-            }
+                /*if(solverThread != null)
+                {
+                    runnable.terminate();
+                    try
+                    {
+                        solverThread.join();
+                    }
+                    catch(Exception exc)
+                    {
+
+                    }
+                }*/
+            System.out.println("Got here second");
+            ll.resetButtons(buttons);
+            System.out.println("Got here");
             moveCounter = 0;
             firstPress = true;
             startTimer = 0;

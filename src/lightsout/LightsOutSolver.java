@@ -39,6 +39,7 @@ public class LightsOutSolver extends Thread
         solveStart = System.currentTimeMillis();
         int count = 0;
         boolean isRunning = true;
+        int moves = solutionArray.length;
         while(count < solutionArray.length && isRunning == true)
         {
             if(solutionArray[count][0] != 999)
@@ -52,10 +53,10 @@ public class LightsOutSolver extends Thread
                 {
 
                 }
+                moveCounter++;
             }
-            moveCounter++;
             count ++;
-            Thread[] a = new Thread[1000];
+            /*Thread[] a = new Thread[1000];
             int n = Thread.enumerate(a);
             isRunning = false;
             for(int j=0; j<n;j++)
@@ -64,11 +65,16 @@ public class LightsOutSolver extends Thread
                 {
                     isRunning = true;
                 }
-            }
+            }*/
+            isRunning = LightsOutGUI.isSwinging; 
         }
         solveEnd = System.currentTimeMillis();
-        LightsOutGUI lg = new LightsOutGUI();
-        lg.endGame(moveCounter, solveStart, solveEnd);
+        if(ll.checkWin() == true)
+        {
+            LightsOutGUI lg = new LightsOutGUI();
+            lg.endGame(moveCounter, solveStart, solveEnd);
+        }
+
     }
     
     public void changeLightSolver(JToggleButton currentButton, JToggleButton[][] buttonsArray)
